@@ -73,45 +73,46 @@ The `SelectStatement` class shown below connects to the database, creates a stat
 calls the `executeQuery` method to select all rows in the `employee` table, then loops through the result to
 print the values in each row. 
 
+Similar to a `Connection` and `Statement`,  a `ResultSet` should be closed after the try statement
+executes, thus we surround the call to `executeQuery` in a try-with-resources statement.
+
 ```java
 import java.sql.*;
 
 public class SelectStatement {
 
-    static final String DB_URL = "jdbc:postgresql://localhost:5432/employee_db";
-    static final String USER = "postgres";
-    static final String PASSWORD = "postgres";
+   static final String DB_URL = "jdbc:postgresql://localhost:5432/employee_db";
+   static final String USER = "postgres";
+   static final String PASSWORD = "postgres";
 
-    public static void main(String[] args) {
-        try {
-            //Establish a connection to the database
-            Connection connection = DriverManager.getConnection(DB_URL, USER, PASSWORD);
-
-            //Create a statement object to execute SQL statements through the database connection
-            Statement statement = connection.createStatement();
-
-            //The method executeQuery returns a ResultSet object, which encapsulates the set of rows returned from the query.
-            ResultSet rs = statement.executeQuery("SELECT * FROM employee");
-
+   public static void main(String[] args) {
+      try (
+              //Establish a connection to the database
+              Connection connection = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+              //Create a statement object to execute SQL statements on the database
+              Statement statement = connection.createStatement();
+      ) {
+         try (
+                 //The method executeQuery returns a ResultSet object, which encapsulates the set of rows returned from the query.
+                 ResultSet rs = statement.executeQuery("SELECT * FROM employee");
+         ) {
             //Loop to get each row in the result set.  The method rs.next() moves a cursor to next row.
             while (rs.next()) {
-                //Use the column name to retrieve the value from the current row
-                System.out.println(
-                            String.format("id %d email %s office %s salary %.2f",
-                                    rs.getInt("id"),
-                                    rs.getString("email"),
-                                    rs.getString("office"),
-                                    rs.getDouble("salary")));
+               //Use the column name to retrieve the value from the current row
+               System.out.println(
+                       String.format("id %d email %s office %s salary %.2f",
+                               rs.getInt("id"),
+                               rs.getString("email"),
+                               rs.getString("office"),
+                               rs.getDouble("salary")));
             }
-            rs.close();  //close the result set
-
-            connection.close();  //close the database connection
-        } catch (SQLException e) {
+         } catch (SQLException e) {
             System.out.println(e.getMessage());
-        }
-
-    }
-
+         }
+      } catch (SQLException e) {
+         System.out.println(e.getMessage());
+      }
+   }
 }
 ```
 
