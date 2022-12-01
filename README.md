@@ -56,7 +56,7 @@ Query the `employee` table in the **pgAdmin** query tool to confirm the 3 rows:
 
 ![insert 3 rows](https://curriculum-content.s3.amazonaws.com/6036/jdbc-statement/insert_rows.png)
 
-## Execute an SELECT statement
+## Execute a SELECT statement
 
 The steps to execute an SQL SELECT statement are:
 
